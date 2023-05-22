@@ -1,5 +1,5 @@
-﻿# Mx.NET.SDK.SmartSend
-⚡ MultiversX .NET SmartSend SDK: Library for interacting with Smart Send contracts on MultiversX blockchain
+# Mx.NET.SDK.SmartSend
+⚡ MultiversX SmartSend .NET SDK: Library for interacting with Smart Send contracts on MultiversX blockchain
 
 ## How to install?
 The content is delivered via nuget packages:
