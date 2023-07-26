@@ -7,7 +7,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <PackageId>RemarkableTools.Mx.SmartSend</PackageId>
     <Title>RemarkableTools.Mx.SmartSend</Title>
-    <Version>1.0.0</Version>
+    <Version>1.0.1</Version>
     <Authors>Remarkable Tools</Authors>
     <Company>Remarkable Tools</Company>
     <Description>⚡ MultiversX .NET SmartSend SDK: Library for interacting with Smart Send contracts on MultiversX blockchain</Description>
@@ -18,7 +18,7 @@
     <RepositoryType>GitHub</RepositoryType>
     <PackageTags>RemarkableTools;MultiversX;MxDotNetSmartSend</PackageTags>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-    <PackageReleaseNotes>Smart Send SDK public release</PackageReleaseNotes>
+    <PackageReleaseNotes>SDK updates and improvements</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,8 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RemarkableTools.Mx" Version="1.0.16" />
-    <PackageReference Include="RemarkableTools.Mx.Core" Version="1.0.7" />
+    <PackageReference Include="RemarkableTools.Mx" Version="2.0.0" />
+    <PackageReference Include="RemarkableTools.Mx.Core" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
