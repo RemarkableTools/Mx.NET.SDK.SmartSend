@@ -37,8 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RemarkableTools.Mx" Version="2.0.0" />
-    <PackageReference Include="RemarkableTools.Mx.Core" Version="2.0.0" />
+    <PackageReference Include="RemarkableTools.Mx" Version="2.0.13" />
+    <PackageReference Include="RemarkableTools.Mx.Core" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
