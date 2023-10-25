@@ -11,7 +11,7 @@ The content is delivered via nuget packages:
 ## Quick start guide
 ### Basic example
 ```csharp
-var provider = new ApiProvider(new ApiNetworkConfiguration(Network.DevNet));
+IApiProvider provider = new ApiProvider(new ApiNetworkConfiguration(Network.DevNet));
 var networkConfig = await NetworkConfig.GetFromNetwork(provider);
 
 var account = Account.From(await provider.GetAccount("MY_ADDRESS"));
@@ -30,7 +30,7 @@ var egldTxs = smartSend.CreateEGLDTransactions(inputTransactions);
 ### Advanced example
 *The following example is using a wallet __signer__ that should not be used in production, only in private!*
 ```csharp
-var provider = new ApiProvider(new ApiNetworkConfiguration(Network.DevNet));
+IApiProvider provider = new ApiProvider(new ApiNetworkConfiguration(Network.DevNet));
 var networkConfig = await NetworkConfig.GetFromNetwork(provider);
 
 var filePath = "PATH/TO/KEYFILE.json";
