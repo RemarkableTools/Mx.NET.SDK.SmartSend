@@ -16,8 +16,9 @@ namespace Mx.NET.SDK.SmartSend
     {
         private readonly Account _account;
         private readonly NetworkConfig _networkConfig;
-        private string _smartSendContract { get; set; } = string.Empty;
-        private int _chunkLimit { get; set; } = 100;
+        private string SmartSendContract { get; set; } = string.Empty;
+        private int ChunkLimit { get; set; } = 100;
+
         public SmartSend(
             Account account,
             NetworkConfig networkConfig)
@@ -25,6 +26,7 @@ namespace Mx.NET.SDK.SmartSend
             _account = account;
             _networkConfig = networkConfig;
         }
+
         public SmartSend(
             Account account,
             NetworkConfig networkConfig,
@@ -33,21 +35,24 @@ namespace Mx.NET.SDK.SmartSend
         {
             _account = account;
             _networkConfig = networkConfig;
-            _smartSendContract = smartSendContract;
-            _chunkLimit = chunkLimit;
+            SmartSendContract = smartSendContract;
+            ChunkLimit = chunkLimit;
         }
 
         public void SetChunkLimit(int limit)
         {
-            _chunkLimit = limit;
+            ChunkLimit = limit;
         }
 
         public void SetSmartSendContractAddress(string address)
         {
-            _smartSendContract = address;
+            SmartSendContract = address;
         }
 
-        public TransactionRequest[] CreateEGLDTransactions(List<TokenAmount> inputTransactions, int gasPerTx = 600000, string? contractAddress = null)
+        public TransactionRequest[] CreateEGLDTransactions(
+            List<TokenAmount> inputTransactions,
+            int gasPerTx = 600000,
+            string? contractAddress = null)
         {
             Address smartSendContractAddress;
             if (contractAddress != null)
@@ -56,21 +61,17 @@ namespace Mx.NET.SDK.SmartSend
             }
             else
             {
-                if (!string.IsNullOrEmpty(_smartSendContract))
-                    smartSendContractAddress = Address.FromBech32(_smartSendContract);
+                if (!string.IsNullOrEmpty(SmartSendContract))
+                    smartSendContractAddress = Address.FromBech32(SmartSendContract);
                 else
                     throw new Exception("Smart Send Contract address is not set");
             }
 
-            var transactionsChunks = inputTransactions.Chunk(_chunkLimit);
+            var transactionsChunks = inputTransactions.Chunk(ChunkLimit);
             List<TransactionRequest> transactionRequests = new();
             foreach (var chunk in transactionsChunks)
             {
-                GasLimit gasLimit;
-                if (chunk.Length < 7)
-                    gasLimit = new GasLimit(4000000);
-                else
-                    gasLimit = new GasLimit(chunk.Length * gasPerTx);
+                var gasLimit = chunk.Length < 7 ? new GasLimit(4000000) : new GasLimit(chunk.Length * gasPerTx);
 
                 List<IBinaryType> arguments = new();
                 foreach (var tx in chunk)
@@ -88,8 +89,9 @@ namespace Mx.NET.SDK.SmartSend
                     smartSendContractAddress,
                     gasLimit,
                     amount,
-                    SMART_SEND_METHOD,
-                    arguments.ToArray());
+                    SmartSendMethod,
+                    arguments.ToArray()
+                );
 
                 _account.IncrementNonce();
                 transactionRequests.Add(transactionRequest);
@@ -98,7 +100,11 @@ namespace Mx.NET.SDK.SmartSend
             return transactionRequests.ToArray();
         }
 
-        public TransactionRequest[] CreateTokenTransactions(AccountToken token, List<TokenAmount> inputTransactions, int gasPerTx = 900000, string? contractAddress = null)
+        public TransactionRequest[] CreateTokenTransactions(
+            AccountToken token,
+            List<TokenAmount> inputTransactions,
+            int gasPerTx = 900000,
+            string? contractAddress = null)
         {
             Address smartSendContractAddress;
             if (contractAddress != null)
@@ -107,21 +113,17 @@ namespace Mx.NET.SDK.SmartSend
             }
             else
             {
-                if (!string.IsNullOrEmpty(_smartSendContract))
-                    smartSendContractAddress = Address.FromBech32(_smartSendContract);
+                if (!string.IsNullOrEmpty(SmartSendContract))
+                    smartSendContractAddress = Address.FromBech32(SmartSendContract);
                 else
                     throw new Exception("Smart Send Contract address is not set");
             }
 
-            var transactionsChunks = inputTransactions.Chunk(_chunkLimit);
+            var transactionsChunks = inputTransactions.Chunk(ChunkLimit);
             List<TransactionRequest> transactionRequests = new();
             foreach (var chunk in transactionsChunks)
             {
-                GasLimit gasLimit;
-                if (chunk.Length < 7)
-                    gasLimit = new GasLimit(6000000);
-                else
-                    gasLimit = new GasLimit(chunk.Length * gasPerTx);
+                var gasLimit = chunk.Length < 7 ? new GasLimit(6000000) : new GasLimit(chunk.Length * gasPerTx);
 
                 List<IBinaryType> arguments = new();
                 foreach (var tx in chunk)
@@ -131,7 +133,10 @@ namespace Mx.NET.SDK.SmartSend
                 }
 
                 var amounts = chunk.Select(tx => tx.Amount.Value);
-                var amount = ESDTAmount.From(amounts.Aggregate((currentSum, item) => currentSum + item).ToString(), token.GetESDT());
+                var amount = ESDTAmount.From(
+                    amounts.Aggregate((currentSum, item) => currentSum + item).ToString(),
+                    token.GetESDT()
+                );
 
                 var transactionRequest = TokenTransferToSmartContract(
                     _networkConfig,
@@ -140,8 +145,9 @@ namespace Mx.NET.SDK.SmartSend
                     gasLimit,
                     token.Identifier,
                     amount,
-                    SMART_SEND_METHOD,
-                    arguments.ToArray());
+                    SmartSendMethod,
+                    arguments.ToArray()
+                );
 
                 _account.IncrementNonce();
                 transactionRequests.Add(transactionRequest);
@@ -150,7 +156,11 @@ namespace Mx.NET.SDK.SmartSend
             return transactionRequests.ToArray();
         }
 
-        public TransactionRequest[] CreateMetaESDTTransactions(AccountMetaESDT metaESDT, List<TokenAmount> inputTransactions, int gasPerTx = 900000, string? contractAddress = null)
+        public TransactionRequest[] CreateMetaESDTTransactions(
+            AccountMetaESDT metaESDT,
+            List<TokenAmount> inputTransactions,
+            int gasPerTx = 900000,
+            string? contractAddress = null)
         {
             Address smartSendContractAddress;
             if (contractAddress != null)
@@ -159,21 +169,17 @@ namespace Mx.NET.SDK.SmartSend
             }
             else
             {
-                if (!string.IsNullOrEmpty(_smartSendContract))
-                    smartSendContractAddress = Address.FromBech32(_smartSendContract);
+                if (!string.IsNullOrEmpty(SmartSendContract))
+                    smartSendContractAddress = Address.FromBech32(SmartSendContract);
                 else
                     throw new Exception("Smart Send Contract address is not set");
             }
 
-            var transactionsChunks = inputTransactions.Chunk(_chunkLimit);
+            var transactionsChunks = inputTransactions.Chunk(ChunkLimit);
             List<TransactionRequest> transactionRequests = new();
             foreach (var chunk in transactionsChunks)
             {
-                GasLimit gasLimit;
-                if (chunk.Length < 7)
-                    gasLimit = new GasLimit(6000000);
-                else
-                    gasLimit = new GasLimit(chunk.Length * gasPerTx);
+                var gasLimit = chunk.Length < 7 ? new GasLimit(6000000) : new GasLimit(chunk.Length * gasPerTx);
 
                 List<IBinaryType> arguments = new();
                 foreach (var tx in chunk)
@@ -183,7 +189,10 @@ namespace Mx.NET.SDK.SmartSend
                 }
 
                 var amounts = chunk.Select(tx => tx.Amount.Value);
-                var amount = ESDTAmount.From(amounts.Aggregate((currentSum, item) => currentSum + item).ToString(), metaESDT.GetESDT());
+                var amount = ESDTAmount.From(
+                    amounts.Aggregate((currentSum, item) => currentSum + item).ToString(),
+                    metaESDT.GetESDT()
+                );
 
                 var transactionRequest = NFTTransferToSmartContract(
                     _networkConfig,
@@ -193,8 +202,9 @@ namespace Mx.NET.SDK.SmartSend
                     metaESDT.Collection,
                     metaESDT.Nonce,
                     amount,
-                    SMART_SEND_METHOD,
-                    arguments.ToArray());
+                    SmartSendMethod,
+                    arguments.ToArray()
+                );
 
                 _account.IncrementNonce();
                 transactionRequests.Add(transactionRequest);
@@ -203,7 +213,10 @@ namespace Mx.NET.SDK.SmartSend
             return transactionRequests.ToArray();
         }
 
-        public TransactionRequest[] CreateNFTTransactions(List<TokenAmount> inputTransactions, int gasPerTx = 900000, string? contractAddress = null)
+        public TransactionRequest[] CreateNFTTransactions(
+            List<TokenAmount> inputTransactions,
+            int gasPerTx = 900000,
+            string? contractAddress = null)
         {
             Address smartSendContractAddress;
             if (contractAddress != null)
@@ -212,21 +225,17 @@ namespace Mx.NET.SDK.SmartSend
             }
             else
             {
-                if (!string.IsNullOrEmpty(_smartSendContract))
-                    smartSendContractAddress = Address.FromBech32(_smartSendContract);
+                if (!string.IsNullOrEmpty(SmartSendContract))
+                    smartSendContractAddress = Address.FromBech32(SmartSendContract);
                 else
                     throw new Exception("Smart Send Contract address is not set");
             }
 
-            var transactionsChunks = inputTransactions.Chunk(_chunkLimit);
+            var transactionsChunks = inputTransactions.Chunk(ChunkLimit);
             List<TransactionRequest> transactionRequests = new();
             foreach (var chunk in transactionsChunks)
             {
-                GasLimit gasLimit;
-                if (chunk.Length < 7)
-                    gasLimit = new GasLimit(6000000);
-                else
-                    gasLimit = new GasLimit(chunk.Length * gasPerTx);
+                var gasLimit = chunk.Length < 7 ? new GasLimit(6000000) : new GasLimit(chunk.Length * gasPerTx);
 
                 List<Tuple<ESDTIdentifierValue, ulong, ESDTAmount>> nfts = new();
                 List<IBinaryType> arguments = new();
@@ -248,8 +257,9 @@ namespace Mx.NET.SDK.SmartSend
                     smartSendContractAddress,
                     gasLimit,
                     nfts.ToArray(),
-                    SMART_SEND_NFT_METHOD,
-                    arguments.ToArray());
+                    SmartSendNftMethod,
+                    arguments.ToArray()
+                );
 
                 _account.IncrementNonce();
                 transactionRequests.Add(transactionRequest);
@@ -258,7 +268,11 @@ namespace Mx.NET.SDK.SmartSend
             return transactionRequests.ToArray();
         }
 
-        public TransactionRequest[] CreateSFTTransactions(AccountNFT sft, List<TokenAmount> inputTransactions, int gasPerTx = 900000, string? contractAddress = null)
+        public TransactionRequest[] CreateSFTTransactions(
+            AccountNFT sft,
+            List<TokenAmount> inputTransactions,
+            int gasPerTx = 900000,
+            string? contractAddress = null)
         {
             Address smartSendContractAddress;
             if (contractAddress != null)
@@ -267,8 +281,8 @@ namespace Mx.NET.SDK.SmartSend
             }
             else
             {
-                if (!string.IsNullOrEmpty(_smartSendContract))
-                    smartSendContractAddress = Address.FromBech32(_smartSendContract);
+                if (!string.IsNullOrEmpty(SmartSendContract))
+                    smartSendContractAddress = Address.FromBech32(SmartSendContract);
                 else
                     throw new Exception("Smart Send Contract address is not set");
             }
@@ -276,15 +290,11 @@ namespace Mx.NET.SDK.SmartSend
             var sftCollection = sft.Collection;
             var sftNonce = sft.Nonce;
 
-            var transactionsChunks = inputTransactions.Chunk(_chunkLimit);
+            var transactionsChunks = inputTransactions.Chunk(ChunkLimit);
             List<TransactionRequest> transactionRequests = new();
             foreach (var chunk in transactionsChunks)
             {
-                GasLimit gasLimit;
-                if (chunk.Length < 7)
-                    gasLimit = new GasLimit(6000000);
-                else
-                    gasLimit = new GasLimit(chunk.Length * gasPerTx);
+                var gasLimit = chunk.Length < 7 ? new GasLimit(6000000) : new GasLimit(chunk.Length * gasPerTx);
 
                 List<IBinaryType> arguments = new();
                 foreach (var tx in chunk)
@@ -294,7 +304,10 @@ namespace Mx.NET.SDK.SmartSend
                 }
 
                 var amounts = chunk.Select(tx => tx.Amount.Value);
-                var amount = ESDTAmount.From(amounts.Aggregate((currentSum, item) => currentSum + item).ToString(), sft.GetESDT());
+                var amount = ESDTAmount.From(
+                    amounts.Aggregate((currentSum, item) => currentSum + item).ToString(),
+                    sft.GetESDT()
+                );
 
                 var transactionRequest = NFTTransferToSmartContract(
                     _networkConfig,
@@ -304,8 +317,9 @@ namespace Mx.NET.SDK.SmartSend
                     sftCollection,
                     sftNonce,
                     amount,
-                    SMART_SEND_SFT_METHOD,
-                    arguments.ToArray());
+                    SmartSendMethod,
+                    arguments.ToArray()
+                );
 
                 _account.IncrementNonce();
                 transactionRequests.Add(transactionRequest);
