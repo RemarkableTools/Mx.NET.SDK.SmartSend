@@ -11,7 +11,7 @@
     <Authors>Remarkable Tools</Authors>
     <Company>Remarkable Tools</Company>
     <Description>⚡ MultiversX .NET SmartSend SDK: Library for interacting with Smart Send contracts on MultiversX blockchain</Description>
-    <Copyright>Copyright © Remarkable Tools 2023</Copyright>
+    <Copyright>Copyright © Remarkable Tools 2024</Copyright>
     <PackageIcon>RemarkableToolsPackage.jpg</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/RemarkableTools/Mx.NET.SDK.SmartSend</RepositoryUrl>
